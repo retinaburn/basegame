@@ -33,17 +33,31 @@ public class GameCanvas extends JPanel {
         this.repaint();
     }
 
+    double degrees = 0;
+
     @Override
     public void paintComponent(Graphics g) {
         int width = this.getMaximumSize().width;
         int height = this.getMaximumSize().height;
         g.clearRect(0, 0, width, height);
 
-        g.setColor(Color.RED);
-        int circleRadius = 5;
-        int circleCenterX = width/2 - circleRadius;
-        int circleCentery = height/2 - circleRadius;
-        g.fillOval(circleCenterX, circleCentery, circleRadius*2, circleRadius*2);
+        int circleRadius = gameState.radius;
+        int circleCenterX = gameState.circle1.getIntX();
+        int circleCenterY = gameState.circle1.getIntY();
+        drawFilledCenteredCircle(g, circleCenterX, circleCenterY, circleRadius, Color.red);
+
+        drawFilledCenteredCircle(g, gameState.circle2.getIntX(), gameState.circle2.getIntY(), circleRadius, Color.blue);
+        drawFilledCenteredCircle(g, gameState.circle3.getIntX(), gameState.circle3.getIntY(), circleRadius, Color.black);
+
+        degrees+=1;
+    }
+
+    void drawFilledCenteredCircle(Graphics g, int x, int y, int radius, Color color){
+        Color originalColor = g.getColor();
+        g.setColor(color);
+        g.fillOval(x - radius, y - radius, radius*2, radius*2);
+        g.setColor(originalColor);
+
     }
 
     BufferedImage loadImage(String filename) throws IOException {

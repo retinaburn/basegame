@@ -21,7 +21,7 @@ public class Main {
         ConfigurableApplicationContext context = builder.run(args);
         int width = 800;
         int height = 600;
-        GameState gameState = new GameState();
+        GameState gameState = new GameState(width, height);
         KeyState keyState = new KeyState();
         KeyListener keyListener = new KeyListener(keyState);
         Game game = new Game(Game.frame(width, height),

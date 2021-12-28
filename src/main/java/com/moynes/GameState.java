@@ -10,9 +10,24 @@ public class GameState {
     V2 velocity = new V2();
     V2 playerPos = new V2(0, 0);
     V2 acceleration = new V2();
+    float drag = -0.08f;
     double adjustmentOffsetWhenCollides = 0.01;
 
-    public GameState() {
+
+    V2 circle1;
+    V2 circle2;
+    V2 circle3;
+    int radius = 5;
+    int width;
+    int height;
+
+    double circle2Degrees = 0;
+    double circle3Degrees = 0;
+
+    public GameState(int width, int height) {
+        this.width = width;
+        this.height = height;
+        circle1 = new V2(width/2.0 - radius, height/2.0 - radius);
     }
 
     public boolean update(KeyState keyState, long dt) {
@@ -33,7 +48,7 @@ public class GameState {
         if (keyState.SPACE_KEY_DOWN) {
         }
         newAcceleration = newAcceleration.normalize().multiply(speed);
-        newAcceleration.add(new V2(velocity).multiply(-0.08));
+        newAcceleration.add(new V2(velocity).multiply(drag));
 
         V2 newPlayerPos = new V2(playerPos);
         //p = 1/2*a*sq(t) + v't + p
@@ -50,6 +65,18 @@ public class GameState {
         if (acceleration.getLength() < 0.01)
             acceleration = new V2();
 
+
+        circle2Degrees += dt / 10.0;
+        double radians = Math.toRadians(circle2Degrees);
+        double c2X = (width/2.0 - radius + Math.cos(radians) * 100);
+        double c2Y = (height/2.0 - radius + Math.sin(radians) * 100);
+        circle2 = new V2(c2X, c2Y);
+
+        circle3Degrees += dt / 2.0;
+        radians = Math.toRadians(circle3Degrees);
+        double c3X = c2X + Math.sin(radians)*30;
+        double c3Y = c2Y + Math.cos(radians)*30;
+        circle3 = new V2(c3X, c3Y);
         return true;
     }
 }
