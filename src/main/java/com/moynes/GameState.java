@@ -17,6 +17,7 @@ public class GameState {
     V2 circle1;
     V2 circle2;
     V2 circle3;
+    V2 circle4;
     int radius = 5;
     int width;
     int height;
@@ -67,10 +68,16 @@ public class GameState {
 
 
         circle2Degrees += dt / 10.0;
+        circle2Degrees %= 360;
         double radians = Math.toRadians(circle2Degrees);
         double c2X = (width/2.0 - radius + Math.cos(radians) * 100);
         double c2Y = (height/2.0 - radius + Math.sin(radians) * 100);
         circle2 = new V2(c2X, c2Y);
+
+        radians = Math.toRadians(-circle2Degrees);
+        double c4X = (width/2.0 - radius + Math.cos(radians) * 50);
+        double c4Y = (height/2.0 - radius + Math.sin(radians) * 50);
+        circle4 = new V2(c4X, c4Y);
 
         circle3Degrees += dt / 2.0;
         radians = Math.toRadians(circle3Degrees);

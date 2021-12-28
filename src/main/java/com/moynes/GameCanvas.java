@@ -48,6 +48,7 @@ public class GameCanvas extends JPanel {
 
         drawFilledCenteredCircle(g, gameState.circle2.getIntX(), gameState.circle2.getIntY(), circleRadius, Color.blue);
         drawFilledCenteredCircle(g, gameState.circle3.getIntX(), gameState.circle3.getIntY(), circleRadius, Color.black);
+        drawFilledCenteredCircle(g, gameState.circle4.getIntX(), gameState.circle4.getIntY(), circleRadius, Color.ORANGE);
 
         degrees+=1;
     }
