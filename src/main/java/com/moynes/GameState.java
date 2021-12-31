@@ -3,80 +3,108 @@ package com.moynes;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
-@Data
 @Slf4j
 public class GameState {
-    float speed = 0.1f; //m/s2
+    static float PIXELS_PER_METER = 100;
+    double launchDegrees = 85.0;
+    float launchSpeed = 800.0f / PIXELS_PER_METER; //m/s2
+    float moveSpeed = 3.0f / PIXELS_PER_METER; //m/s2
     V2 velocity = new V2();
     V2 playerPos = new V2(0, 0);
+    V2 projectilePos = null;
+    V2 launcherEnd = setLauncherEnd(launchDegrees);
+
+    private V2 setLauncherEnd(double launchDegrees) {
+        V2 result = new V2((int)(Math.cos(Math.toRadians(launchDegrees))*100),
+                (int)(Math.sin(Math.toRadians(launchDegrees))*100));
+        return result;
+    }
+
     V2 acceleration = new V2();
-    float drag = -0.08f;
+    V2 gravity = new V2(0, -9.8 / PIXELS_PER_METER);
+    float airDrag = -0.8f / PIXELS_PER_METER;
+    float groundFriction = -4.0f / PIXELS_PER_METER;
     double adjustmentOffsetWhenCollides = 0.01;
 
-
-    V2 circle1;
-    V2 circle2;
-    V2 circle3;
     int radius = 5;
     int width;
     int height;
 
-    double circle2Degrees = 0;
-    double circle3Degrees = 0;
 
     public GameState(int width, int height) {
         this.width = width;
         this.height = height;
-        circle1 = new V2(width/2.0 - radius, height/2.0 - radius);
     }
 
     public boolean update(KeyState keyState, long dt) {
         V2 newAcceleration = new V2();
 
         if (keyState.UP_KEY_DOWN) {
-            newAcceleration.y += 1;
         }
         if (keyState.DOWN_KEY_DOWN) {
-            newAcceleration.y -= 1;
         }
         if (keyState.LEFT_KEY_DOWN) {
-            newAcceleration.x -= 1;
+            launchDegrees+=0.1;
+            launcherEnd = setLauncherEnd(launchDegrees);
         }
         if (keyState.RIGHT_KEY_DOWN) {
-            newAcceleration.x += 1;
+            launchDegrees-=0.1;
+            launcherEnd = setLauncherEnd(launchDegrees);
         }
-        if (keyState.SPACE_KEY_DOWN) {
+
+        if (keyState.SPACE_KEY_DOWN && projectilePos == null) {
+            newAcceleration.x = Math.cos(Math.toRadians(launchDegrees));
+            newAcceleration.y = Math.sin(Math.toRadians(launchDegrees));
+            projectilePos = new V2(launcherEnd);
         }
-        newAcceleration = newAcceleration.normalize().multiply(speed);
-        newAcceleration.add(new V2(velocity).multiply(drag));
+        newAcceleration = newAcceleration.normalize().multiply(launchSpeed);
+        if (projectilePos != null && projectilePos.y > 0)
+            newAcceleration.add(new V2(velocity.x * airDrag, 0));
+        else {
+            newAcceleration.add(new V2(velocity.x * groundFriction, 0));
+        }
 
-        V2 newPlayerPos = new V2(playerPos);
-        //p = 1/2*a*sq(t) + v't + p
-        newPlayerPos = (new V2(newAcceleration))
-                .multiply(dt * dt)
-                .multiply(0.5)
-                .add(new V2(velocity).multiply(dt))
-                .add(new V2(newPlayerPos));
-        velocity = (new V2(newAcceleration).multiply(dt).add(velocity));
-        acceleration = newAcceleration;
+        newAcceleration.add(new V2(gravity));
 
-        if (velocity.getLength() < 0.01)
-            velocity = new V2();
-        if (acceleration.getLength() < 0.01)
-            acceleration = new V2();
+        if (projectilePos != null) {
+            V2 testProjectilePos = new V2(projectilePos);
+            //p = 1/2*a*sq(t) + v't + p
+            testProjectilePos = (new V2(newAcceleration))
+                    .multiply(dt * dt)
+                    .multiply(0.5)
+                    .add(new V2(velocity).multiply(dt))
+                    .add(new V2(testProjectilePos));
+            velocity = (new V2(newAcceleration).multiply(dt).add(velocity));
+            acceleration = newAcceleration;
 
+            projectilePos = testProjectilePos;
 
-        circle2Degrees += dt / 10.0;
-        double radians = Math.toRadians(circle2Degrees);
-        double c2X = (width/2.0 - radius + Math.cos(radians) * 100);
-        double c2Y = (height/2.0 - radius + Math.sin(radians) * 100);
-        circle2 = new V2(c2X, c2Y);
+            if (projectilePos.y <= 0.0) {
+                projectilePos.y = 0;
+                velocity = new V2(velocity.x, 0);
+            }
+            if (projectilePos.x > 800) {
+                projectilePos.x = 0;
+            } else if (projectilePos.x < 0) {
+                projectilePos.y = 0;
+            }
+            if (acceleration.x < 0) {
+                acceleration.x = 0;
+            }
+            if (velocity.x < 0.0001) {
+                velocity.x = 0;
+                projectilePos = null;
+            }
+        }
 
-        circle3Degrees += dt / 2.0;
-        radians = Math.toRadians(circle3Degrees);
-        double c3X = c2X + Math.sin(radians)*30;
-        double c3Y = c2Y + Math.cos(radians)*30;
-        circle3 = new V2(c3X, c3Y);
+//        if (velocity.getLength() < 0.01)
+//            velocity = new V2();
+//        if (acceleration.getLength() < 0.01 )
+//            acceleration = new V2();
+
+        //log.debug("Acceleration: {}, Velocity: {}, ProjectilePos: {}", acceleration, velocity, projectilePos);
+
         return true;
     }
 }
+
