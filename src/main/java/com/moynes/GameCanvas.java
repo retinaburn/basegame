@@ -18,12 +18,19 @@ public class GameCanvas extends JPanel {
 
     BufferedImage[] bufferedImage = new BufferedImage[10];
 
+    int width;
+    int height;
+    int gameFloor;
+
     public GameCanvas(int width, int height, GameState gameState, KeyListener keyListener) {
         this.gameState = gameState;
         this.setMinimumSize(new Dimension(width, height));
         this.setMaximumSize(new Dimension(width, height));
         this.setPreferredSize(new Dimension(width, height));
         this.addKeyListener(keyListener);
+        this.width = this.getMaximumSize().width;
+        this.height = this.getMaximumSize().height;
+        gameFloor = height-100;
     }
 
     long timeSinceLastAnimatedFrame = 0;
@@ -37,14 +44,12 @@ public class GameCanvas extends JPanel {
 
     @Override
     public void paintComponent(Graphics g) {
-        int width = this.getMaximumSize().width;
-        int height = this.getMaximumSize().height;
         g.clearRect(0, 0, width, height);
 
         int circleRadius = gameState.radius;
 
         if (gameState.projectilePos != null) {
-            V2 mappedPlayer = new V2(10 + gameState.projectilePos.x, 400 - gameState.projectilePos.y);
+            V2 mappedPlayer = new V2(10 + gameState.projectilePos.x, gameFloor - gameState.projectilePos.y);
             drawFilledCenteredCircle(g, mappedPlayer.getIntX(), mappedPlayer.getIntY(), circleRadius, Color.black);
             drawRightAlignedText(g, "P: "+gameState.projectilePos, 25);
         }
@@ -73,7 +78,7 @@ public class GameCanvas extends JPanel {
         Color originalColor = g.getColor();
         g.setColor(Color.RED);
 
-        V2 mappedPlayer = new V2(playerPos.getIntX(), 400 - playerPos.getIntY());
+        V2 mappedPlayer = new V2(playerPos.getIntX(), gameFloor - playerPos.getIntY());
 
         g.rotate(Math.toRadians(-launchDegrees-90), mappedPlayer.getIntX(), mappedPlayer.getIntY());
         Rectangle r = new Rectangle(mappedPlayer.getIntX(), mappedPlayer.getIntY(), 10, 100 );
