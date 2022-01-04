@@ -2,13 +2,13 @@ package com.moynes;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 
 @Slf4j
-public class KeyListener implements java.awt.event.KeyListener {
+public class Listener implements KeyListener, MouseListener, MouseMotionListener {
 
     KeyState keyState;
-    public KeyListener(KeyState keyState){
+    public Listener(KeyState keyState){
         this.keyState = keyState;
     }
     @Override
@@ -47,5 +47,46 @@ public class KeyListener implements java.awt.event.KeyListener {
             case KEY_SPACE -> keyState.SPACE_KEY_DOWN = false;
             case KEY_C -> keyState.C_KEY_DOWN = false;
         }
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+//        log.debug("{},{}", e.getX(), e.getY());
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        int x = e.getX() / 10;
+        int y = (600 - e.getY())/10;
+        keyState.LEFT_MOUSE_DOWN = true;
+        keyState.MOUSE_LOCATION = e.getPoint();
+        log.info("Mouse: (x,y) = ({},{}) -> ({}, {})", e.getX(), e.getY(), x, y);
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+//        log.debug("{},{}", e.getX(), e.getY());
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+//        log.debug("{},{}", e.getX(), e.getY());
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+//        log.debug("{},{}", e.getX(), e.getY());
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        log.info("Dragged: {}", e.getPoint());
+        keyState.LEFT_MOUSE_DOWN = true;
+        keyState.MOUSE_LOCATION = e.getPoint();
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+
     }
 }

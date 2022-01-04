@@ -2,4 +2,4 @@ logging:
   level:
     root: INFO
     com.moynes: DEBUG
-    com.moynes.KeyListener: INFO
+    com.moynes.Listener: INFO

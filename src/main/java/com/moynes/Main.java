@@ -23,9 +23,9 @@ public class Main {
         int height = 600;
         GameState gameState = new GameState(width, height);
         KeyState keyState = new KeyState();
-        KeyListener keyListener = new KeyListener(keyState);
+        Listener listener = new Listener(keyState);
         Game game = new Game(Game.frame(width, height),
-                new GameCanvas(width, height, gameState, keyListener),
+                new GameCanvas(width, height, gameState, listener),
                 gameState,
                 keyState);
         game.run();

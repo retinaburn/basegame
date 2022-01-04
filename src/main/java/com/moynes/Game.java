@@ -18,10 +18,12 @@ public class Game {
         this.canvas = canvas;
         this.gameState = gameState;
 
+        Listener listener = new Listener(keyState);
         frame.setVisible(true);
         frame.add(canvas);
         frame.pack();
-        frame.addKeyListener(new KeyListener(keyState));
+        frame.addKeyListener(listener);
+//        frame.addMouseListener(listener);
     }
 
     private static long getCurrentTime() {
