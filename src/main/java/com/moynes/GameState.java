@@ -94,6 +94,7 @@ public class GameState {
 //        }
     }
 
+    int mouseMode = 0;
     public boolean update(KeyState keyState, long dt) {
         V2 newAcceleration = new V2();
 
@@ -115,13 +116,25 @@ public class GameState {
             //dtCount += DT_PER_MOVE;
         }
         if (keyState.LEFT_MOUSE_DOWN) {
-            keyState.LEFT_MOUSE_DOWN = false;
             int x = keyState.MOUSE_LOCATION.x / 10;
             int y = (600 - keyState.MOUSE_LOCATION.y)/10;
             y+=1; //why??
             GridElem elem = posGrid.get(y*80+x);
-            elem.setWall(true);
+            if (mouseMode == 0){
+                if (!elem.isWall()) {
+                    mouseMode = 1;
+                } else {
+                    mouseMode = 2;
+                }
+            }
+            if (mouseMode == 1)
+                elem.setWall(true);
+            else if (mouseMode == 2)
+                elem.setWall(false);
+
             buildBreadthFirstSearch(posGrid, posGoal);
+        } else {
+            mouseMode = 0;
         }
         newAcceleration = newAcceleration.normalize().multiply(speed);
         newAcceleration.add(new V2(velocity).multiply(drag));

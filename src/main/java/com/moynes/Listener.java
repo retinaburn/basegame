@@ -66,6 +66,7 @@ public class Listener implements KeyListener, MouseListener, MouseMotionListener
     @Override
     public void mouseReleased(MouseEvent e) {
 //        log.debug("{},{}", e.getX(), e.getY());
+        keyState.LEFT_MOUSE_DOWN = false;
     }
 
     @Override
@@ -80,7 +81,7 @@ public class Listener implements KeyListener, MouseListener, MouseMotionListener
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        log.info("Dragged: {}", e.getPoint());
+        //log.info("Dragged: {}", e.getPoint());
         keyState.LEFT_MOUSE_DOWN = true;
         keyState.MOUSE_LOCATION = e.getPoint();
     }
